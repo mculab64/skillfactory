@@ -6,14 +6,13 @@ WITH winter_anapa AS
                                                                '2017-02-01',
                                                                '2017-12-01'))
              AND status not in ('Cancelled') ),
-      */Список расхода топлива для каждого самолета, кроме Cessna 208 (не нашел)*/
-	 fuel_consumption AS
+     fuel_consumption AS
           (SELECT '773' AS aircraft_code,
-                  '2600' AS kg_per_hour,
+                  '2600' AS kg_per_hour
                   
            UNION 
            SELECT 'SU9' AS aircraft_code,
-                        '1864' AS kg_per_hour),
+                        '1800' AS kg_per_hour),
     distance_to AS 
           (SELECT 'Belgorod' city,
                   '639' distance
