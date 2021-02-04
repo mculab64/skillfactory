@@ -1,31 +1,29 @@
+WITH winter_anapa as
+(SELECT *
+FROM dst_project.flights
+WHERE departure_airport = 'AAQ'
+  AND (date_trunc('month', scheduled_departure) in ('2017-01-01','2017-02-01', '2017-12-01'))
+  AND status not in ('Cancelled')
+
+)
 SELECT *
 FROM
-  (SELECT f.flight_id,
-          f.departure_airport,
-          a.city departure_city,
-          
-          sum(t_f.amount) earned_money,
-          date_part('hour', f.actual_arrival-f.actual_departure)*60+date_part('minute', f.actual_arrival-f.actual_departure) minutes_in_air
-   FROM dst_project.flights f
-   JOIN dst_project.airports a ON f.departure_airport=a.airport_code
-   JOIN dst_project.ticket_flights t_f ON f.flight_id=t_f.flight_id
-   WHERE f.departure_airport = 'AAQ'
-     AND (date_trunc('month', f.scheduled_departure) in ('2017-01-01',
-                                                         '2017-02-01',
-                                                         '2017-12-01'))
-     AND f.status not in ('Cancelled')
-   GROUP BY 1,
-            2,
-            3) departed
-JOIN
-  (SELECT f.flight_id,
-          f.arrival_airport,
-          a.city arrival_city
-   FROM dst_project.flights f
-   JOIN dst_project.airports a ON f.arrival_airport=a.airport_code
-   WHERE f.departure_airport = 'AAQ'
-     AND (date_trunc('month', f.scheduled_departure) in ('2017-01-01',
-                                                         '2017-02-01',
-                                                         '2017-12-01'))
-     AND f.status not in ('Cancelled') ) arrived ON arrived.flight_id=departed.flight_id
-     
+
+
+    (SELECT w_a.flight_id,
+              w_a.departure_airport,
+              a.city departure_city ,
+              date_part('hour', w_a.actual_arrival-w_a.actual_departure)*60+date_part('minute', w_a.actual_arrival-w_a.actual_departure) minutes_in_air
+       FROM winter_anapa w_a 
+            JOIN dst_project.airports a ON w_a.departure_airport=a.airport_code
+            ) departed
+            
+     join
+    
+    (SELECT w_a.flight_id,
+              w_a.arrival_airport,
+              a.city arrival_city
+       FROM winter_anapa w_a 
+            JOIN dst_project.airports a ON w_a.departure_airport=a.airport_code
+            ) arrived
+    on departed.flight_id=arrived.flight_id
